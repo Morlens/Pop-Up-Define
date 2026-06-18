@@ -1,22 +1,64 @@
 #pop-up {
-  position: fixed;
+  position: absolute;
   background: rgb(255, 255, 255);
   color: #000000;
   border-radius: 0.3125rem;
   box-shadow: 0 0 2.5rem rgba(0, 0, 0, 0.5);
   padding: 1rem;
+  padding-bottom: 1rem;
   font-family: "Source Sans Pro", sans-serif;
   font-weight: 300;
-  width: auto;
-  height: auto;
+  max-height: none;
+  overflow: visible;
+  width: 250px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  z-index: 1;
+}
+
+.modal-header h2 {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  width: 100%;
 }
 
 #pop-up::before {
   content: "";
   position: absolute;
   left: -15px;
-  top: 10px;
-  border-width: 8px;
+  top: 6px;
+  border-width: 10px;
   border-style: solid;
   border-color: transparent rgb(255, 255, 255) transparent transparent;
+}
+
+#pop-up.flipped::before {
+  left: auto;
+  right: -15px;
+  border-color: transparent transparent transparent rgb(255, 255, 255);
+}
+
+.content {
+  max-height: 110px;
+  padding-right: 8px;
+  scroll-behavior: smooth;
+  overflow-y: auto;
+}
+
+.content::-webkit-scrollbar {
+  width: 4px;
+}
+
+.content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.content::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.content::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
