@@ -46,7 +46,7 @@ async function createDiv(word, x, y, flipped) {
     "wheel",
     (e) => {
       const content = div.querySelector(".content");
-      content.scrollTop += e.deltaY * 0.5;
+      content.scrollTop += e.deltaY * 0.8;
       e.preventDefault();
     },
     { passive: false },
@@ -56,11 +56,13 @@ async function createDiv(word, x, y, flipped) {
 
 function showHighlightedText() {
   const selectedText = getHighlightedWord();
+  const activeEl = document.activeElement;
   const cleanSelectedText =
     selectedText.trim().split(/\s+/).length > 1
       ? selectedText.trim()
       : selectedText.trim().replace(/[^a-zA-Z]/g, "");
   if (selectedText.trim().length > 50) return;
+  if (activeEl.tagName === "INPUT" || activeEl.tagName === "TEXTAREA") return;
   const popup = document.getElementById("pop-up");
 
   //this ensures that if you highlight word inside pop-up it does not create
@@ -109,7 +111,7 @@ async function fetchDefinition(word, element) {
 
 async function fetchWiki(word, element) {
   try {
-    const url = `https://en.wikipedia.org/w/api.php?action=query&format=json&titles=${encodeURIComponent(word)}&prop=extracts&exintro&explaintext&origin=*`;
+    const url = `https://en.wikipedia.org/w/api.php?action=query&format=json&titles=${encodeURIComponent(word)}&prop=extracts&exintro&origin=*`;
     const response = await fetch(url, {
       headers: {
         "User-Agent": "Word-Explorer/1.0",
@@ -118,11 +120,23 @@ async function fetchWiki(word, element) {
     const data = await response.json();
     const pages = data.query.pages;
     const page = Object.values(pages)[0];
-    element.textContent = page.extract ?? "No information found.";
+    if (page.missing !== undefined || !page.extract) {
+      element.textContent = "No information found.";
+      return;
+    }
+    element.innerHTML = page.extract ?? "No information found.";
   } catch (error) {
     element.textContent = "Failed to fetch source.";
   }
 }
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Backspace" || e.key === "Delete") {
+    const popup = document.getElementById("pop-up");
+    if (popup) popup.remove();
+  }
+});
+
 document.addEventListener("mousedown", function (e) {
   if (e.clientX >= document.documentElement.clientWidth - 20) return;
   const popup = document.getElementById("pop-up");
