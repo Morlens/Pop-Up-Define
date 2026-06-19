@@ -21,7 +21,11 @@ async function createDiv(word, x, y, flipped) {
     existing.querySelector("p").textContent = "Loading...";
     existing.style.left = x + "px";
     existing.style.top = y + "px";
-    fetchDefinition(word, existing.querySelector("p"));
+    fetchDefinition(
+      word,
+      existing.querySelector("p"),
+      existing.querySelector(".pos-label"),
+    );
     return;
   }
 
@@ -33,6 +37,7 @@ async function createDiv(word, x, y, flipped) {
   div.innerHTML = `
   <div class="modal-header">
     <h2>${word.charAt(0).toUpperCase() + word.slice(1)}</h2>
+    <span class="pos-label"></span>
   </div>
 
   <div class="content">
@@ -51,7 +56,11 @@ async function createDiv(word, x, y, flipped) {
     },
     { passive: false },
   );
-  fetchDefinition(word, div.querySelector("p"));
+  fetchDefinition(
+    word,
+    div.querySelector("p"),
+    div.querySelector(".pos-label"),
+  );
 }
 
 function showHighlightedText() {
@@ -88,7 +97,7 @@ function showHighlightedText() {
   }
 }
 
-async function fetchDefinition(word, element) {
+async function fetchDefinition(word, element, labelElement) {
   if (word.includes(" ")) {
     fetchWiki(word, element);
     return;
@@ -98,11 +107,14 @@ async function fetchDefinition(word, element) {
       `https://api.dictionaryapi.dev/api/v2/entries/en/${word}`,
     );
     const data = await response.json();
+    // console.log(data);
     const definition = data[0]?.meanings[0]?.definitions[0]?.definition;
+    const partOfSpeech = data[0]?.meanings[0]?.partOfSpeech;
     if (!definition) {
-      fetchWiki(word, element);
+      fetchWiki(word, element, labelElement);
       return;
     }
+    labelElement.textContent = partOfSpeech ?? "";
     element.textContent = definition;
   } catch (error) {
     element.textContent = "Failed to fetch definition.";

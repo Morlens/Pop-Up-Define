@@ -62,3 +62,14 @@
 .content::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+
+.pos-label {
+  border: 2px solid black;
+  padding: 2px;
+  border-radius: 10px;
+  background-color: gray;
+}
+
+.pos-label:empty {
+  display: none;
+}
